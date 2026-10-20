@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="100 2250 1250 1350" width="64" height="64">
+  <defs>
+    <style>
+      .fav-core { fill: #005B96; }
+      .fav-cyan { fill: #00A3E0; }
+    </style>
+  </defs>
+  <!-- Background Rounded Shield -->
+  <rect x="100" y="2250" width="1250" height="1350" rx="260" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="40"/>
+  <!-- Official Pelindo Wave Mark -->
+  <g transform="translate(0, 0)">
+    <path class="fav-cyan" d="M1224 2396l-417 0c-270 0 -491 221 -491 491l0 139 242 0 0 -139c0 -137 112 -249 249 -249l417 0 0 -242zm-908 871l0 242 242 0 0 -242 -242 0z"/>
+    <path class="fav-core" d="M217 3267l99 0 0 -241 -99 0 0 241zm341 0l175 0c270 0 491 -220 491 -490l0 -381 -242 0 0 381c0 137 -112 249 -249 249l-175 0 0 241z"/>
+  </g>
+</svg>

@@ -55,7 +55,7 @@ CREATE TABLE IF NOT EXISTS `loans` (
     `id_loan` INT AUTO_INCREMENT PRIMARY KEY,
     `id_apd` INT NOT NULL,
     `id_pengawas_acc` INT NULL,
-    `kode_pinjam` VARCHAR(25) NOT NULL UNIQUE,
+    `kode_pinjam` VARCHAR(25) NOT NULL,
     `nama_peminjam` VARCHAR(100) NOT NULL,
     `bagian_unit` VARCHAR(80) NOT NULL,
     `no_hp_peminjam` VARCHAR(20) NOT NULL,
@@ -63,6 +63,7 @@ CREATE TABLE IF NOT EXISTS `loans` (
     `waktu_pinjam` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `waktu_kembali` DATETIME NULL,
     `status_pinjam` ENUM('DIPINJAM', 'SUDAH_DIKEMBALIKAN') NOT NULL DEFAULT 'DIPINJAM',
+    KEY `idx_kode_pinjam` (`kode_pinjam`),
     CONSTRAINT `fk_loan_apd` FOREIGN KEY (`id_apd`) REFERENCES `apd_items` (`id_apd`) ON DELETE RESTRICT,
     CONSTRAINT `fk_loan_pengawas` FOREIGN KEY (`id_pengawas_acc`) REFERENCES `users` (`id_user`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -71,12 +72,12 @@ CREATE TABLE IF NOT EXISTS `loans` (
 CREATE TABLE IF NOT EXISTS `condition_logs` (
     `id_log` INT AUTO_INCREMENT PRIMARY KEY,
     `id_loan` INT NOT NULL,
-    `id_pengawas` INT NOT NULL,
+    `id_pengawas` INT NULL,
     `kondisi_kembali` ENUM('BAIK', 'RUSAK_RINGAN', 'RUSAK_BERAT', 'HILANG') NOT NULL,
     `keterangan` TEXT NULL,
     `waktu_acc` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT `fk_log_loan` FOREIGN KEY (`id_loan`) REFERENCES `loans` (`id_loan`) ON DELETE CASCADE,
-    CONSTRAINT `fk_log_pengawas` FOREIGN KEY (`id_pengawas`) REFERENCES `users` (`id_user`) ON DELETE RESTRICT
+    CONSTRAINT `fk_log_pengawas` FOREIGN KEY (`id_pengawas`) REFERENCES `users` (`id_user`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================================

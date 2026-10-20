@@ -1,6 +1,7 @@
 <?php
 /**
- * Pelacakan Status Peminjaman & Tampilan Bukti Digital Peminjaman APD
+ * Pelacakan Status & Tampilan Kupon Digital Peminjaman APD
+ * Identitas Korporat PT Pelabuhan Indonesia (Pelindo) - Clean Light Enterprise Theme
  * Sistem Inventaris dan Peminjaman APD (Sipad)
  */
 declare(strict_types=1);
@@ -14,11 +15,8 @@ $pdo = getDbConnection();
 $searchQuery = trim((string)($_GET['q'] ?? ''));
 $specificKode = trim((string)($_GET['kode'] ?? ''));
 
-$successLoan = $_SESSION['flash_success_loan'] ?? null;
-unset($_SESSION['flash_success_loan']);
-
-// Ambil detail pinjaman spesifik jika kode disediakan
-$highlightLoan = null;
+// Ambil detail pinjaman spesifik jika ada (mendukung multi-item per kode)
+$highlightLoans = [];
 if ($specificKode !== '') {
     $stmtHighlight = $pdo->prepare("
         SELECT l.*, i.nama_apd, i.kode_apd, i.ukuran_spesifikasi, u.nama_lengkap AS nama_pengawas
@@ -26,13 +24,13 @@ if ($specificKode !== '') {
         JOIN apd_items i ON l.id_apd = i.id_apd
         LEFT JOIN users u ON l.id_pengawas_acc = u.id_user
         WHERE l.kode_pinjam = ?
-        LIMIT 1
+        ORDER BY l.id_loan ASC
     ");
     $stmtHighlight->execute([$specificKode]);
-    $highlightLoan = $stmtHighlight->fetch(PDO::FETCH_ASSOC);
+    $highlightLoans = $stmtHighlight->fetchAll(PDO::FETCH_ASSOC);
 }
 
-// Ambil daftar riwayat peminjaman (aktif atau pencarian)
+// Ambil daftar riwayat peminjaman
 if ($searchQuery !== '') {
     $stmtList = $pdo->prepare("
         SELECT l.*, i.nama_apd, i.kode_apd, u.nama_lengkap AS nama_pengawas
@@ -58,214 +56,256 @@ if ($searchQuery !== '') {
 $loanList = $stmtList->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="bg-slate-50">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Status Peminjaman APD - SIPAD K3</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Kupon Tiket & Status Peminjaman APD - Pelindo</title>
+    <script src="/assets/js/tailwind.min.js"></script>
+    <link rel="icon" type="image/svg+xml" href="/assets/img/favicon.svg">
+    <link rel="alternate icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/assets/css/sipad-design-system.css">
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col">
+<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col pb-24 sm:pb-12 selection:bg-sky-500 selection:text-white">
 
-    <!-- Navbar -->
-    <header class="sticky top-0 z-50 bg-slate-900/80 backdrop-blur-md border-b border-slate-800">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <a href="/index.php" class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-amber-300 text-slate-950 flex items-center justify-center font-bold">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-                    </svg>
+    <!-- Pelindo Corporate Header -->
+    <header class="sticky top-0 z-40 bg-[#003e74] text-white shadow-md">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+            <a href="/index.php" class="flex items-center gap-2.5">
+                <div class="w-9 h-9 rounded-xl bg-white flex items-center justify-center p-1.5 shadow-sm">
+                    <img src="/assets/img/pelindo-emblem.svg" alt="Pelindo" class="w-6 h-6">
                 </div>
                 <div>
-                    <span class="text-lg font-extrabold tracking-tight text-white block leading-tight">SIPAD K3</span>
-                    <span class="text-[10px] tracking-wider uppercase text-amber-400 font-semibold">Pelacakan Sirkulasi</span>
+                    <span class="text-sm font-extrabold text-white block leading-tight">STATUS & KUPON APD</span>
+                    <span class="text-[10px] text-sky-200 font-mono">PT Pelabuhan Indonesia (Persero)</span>
                 </div>
             </a>
 
-            <div class="flex items-center gap-3">
-                <a href="/index.php" class="text-xs sm:text-sm px-3.5 py-1.5 rounded-lg border border-slate-700 bg-slate-800 text-slate-200 hover:bg-slate-700 transition-all font-medium">
+            <div class="flex items-center gap-2">
+                <a href="/index.php" class="touch-target px-3.5 py-1.5 rounded-xl bg-white text-[#005b96] font-bold text-xs hover:bg-sky-50 transition-all shadow-sm">
                     + Pinjam Baru
-                </a>
-                <a href="/login.php" class="text-xs sm:text-sm px-3.5 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold transition-all">
-                    Login Petugas
                 </a>
             </div>
         </div>
     </header>
 
-    <main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full space-y-8">
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 py-6 flex-grow w-full space-y-6">
 
-        <!-- Banner Jika Baru Saja Berhasil Meminjam -->
-        <?php if ($highlightLoan): ?>
-            <div class="bg-gradient-to-br from-slate-900 via-slate-900 to-amber-950/40 border-2 border-amber-500/40 rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-800">
+        <!-- KUPON DIGITAL (PASS CARD) JIKA KODE DIPILIH ATAU REDIRECT BARU -->
+        <?php if (!empty($highlightLoans)): ?>
+            <?php 
+                $firstLoan = $highlightLoans[0];
+                $allReturned = true;
+                $totalUnitsInPass = 0;
+                foreach ($highlightLoans as $hl) {
+                    $totalUnitsInPass += (int)$hl['jumlah_pinjam'];
+                    if ($hl['status_pinjam'] === 'DIPINJAM') {
+                        $allReturned = false;
+                    }
+                }
+            ?>
+            <div class="bg-white rounded-3xl overflow-hidden border border-slate-200 shadow-lg relative">
+                <!-- Header Kupon Pelindo -->
+                <div class="bg-gradient-to-r from-[#003e74] via-[#005b96] to-[#0080c0] p-5 text-white flex items-center justify-between">
                     <div>
-                        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-bold mb-2">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                            </svg>
-                            Bukti Peminjaman Digital Terbit
+                        <span class="text-[10px] uppercase font-mono font-bold tracking-widest block text-sky-200">KUPON PEMINJAMAN APD RESMI</span>
+                        <h2 class="text-lg font-black tracking-tight text-white">BUKTI PENGAMBILAN ALAT K3</h2>
+                    </div>
+                    <div class="h-9 px-2.5 py-1 rounded-xl bg-white flex items-center justify-center shadow-sm">
+                        <img src="/assets/img/pelindo-logo.svg" alt="Pelindo" class="h-5 w-auto">
+                    </div>
+                </div>
+
+                <div class="p-5 sm:p-6 space-y-5">
+                    <!-- Kode Pinjam & Quick Copy -->
+                    <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-center sm:text-left">
+                        <div>
+                            <span class="text-[10px] uppercase font-mono text-slate-500 block font-semibold">KODE TRANSAKSI PEMINJAMAN</span>
+                            <span id="kode-display" class="text-xl sm:text-2xl font-mono font-black text-[#005b96] tracking-wider">
+                                <?= htmlspecialchars($firstLoan['kode_pinjam']) ?>
+                            </span>
                         </div>
-                        <h2 class="text-2xl font-extrabold text-white tracking-tight">Kupon Sirkulasi APD</h2>
-                        <p class="text-xs text-slate-400">Tunjukkan bukti ini kepada Pengawas K3 saat serah terima barang</p>
+                        <button type="button" onclick="salinKode('<?= htmlspecialchars($firstLoan['kode_pinjam']) ?>')"
+                            class="touch-target px-4 py-2 rounded-xl bg-white hover:bg-slate-100 text-[#005b96] text-xs font-bold border border-slate-300 flex items-center justify-center gap-1.5 self-center sm:self-auto shadow-sm">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/>
+                            </svg>
+                            <span id="salin-text">Salin Kode</span>
+                        </button>
                     </div>
 
-                    <div class="text-right">
-                        <span class="text-xs text-slate-400 block font-mono">KODE TRANSAKSI</span>
-                        <span class="text-xl sm:text-2xl font-extrabold font-mono text-amber-400 tracking-wider">
-                            <?= htmlspecialchars($highlightLoan['kode_pinjam']) ?>
+                    <!-- Identitas Peminjam -->
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <div>
+                            <span class="text-slate-500 block font-mono text-[10px] uppercase">Peminjam</span>
+                            <strong class="text-sm text-slate-900 block mt-0.5"><?= htmlspecialchars($firstLoan['nama_peminjam']) ?></strong>
+                            <span class="text-slate-600 block"><?= htmlspecialchars($firstLoan['bagian_unit']) ?></span>
+                        </div>
+                        <div>
+                            <span class="text-slate-500 block font-mono text-[10px] uppercase">Waktu Pengambilan</span>
+                            <strong class="text-slate-900 block mt-0.5"><?= date('d M Y, H:i', strtotime($firstLoan['waktu_pinjam'])) ?></strong>
+                            <span class="text-slate-600 block">WA: <?= htmlspecialchars($firstLoan['no_hp_peminjam']) ?></span>
+                        </div>
+                        <div class="col-span-2 sm:col-span-1">
+                            <span class="text-slate-500 block font-mono text-[10px] uppercase">Status Peminjaman</span>
+                            <div class="mt-0.5">
+                                <?php if (!$allReturned): ?>
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                                        <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+                                        SEDANG DIPINJAM
+                                    </span>
+                                <?php else: ?>
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                                        SEMUA KEMBALI
+                                    </span>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Daftar Peralatan APD yang Dipinjam dalam Kupon Ini -->
+                    <div class="space-y-2">
+                        <span class="text-slate-700 block font-mono text-[11px] uppercase font-bold">
+                            Daftar Peralatan APD Dipinjam (<?= count($highlightLoans) ?> Jenis &bull; <?= $totalUnitsInPass ?> Unit Total)
                         </span>
+                        <div class="divide-y divide-slate-100 rounded-xl bg-white border border-slate-200 overflow-hidden shadow-sm">
+                            <?php foreach ($highlightLoans as $item): ?>
+                                <div class="p-3.5 flex items-center justify-between text-xs hover:bg-slate-50 transition-colors">
+                                    <div class="space-y-0.5">
+                                        <strong class="text-slate-900 text-sm block"><?= htmlspecialchars($item['nama_apd']) ?></strong>
+                                        <div class="text-[11px] text-slate-500">
+                                            <?= htmlspecialchars($item['ukuran_spesifikasi'] ?? 'Standard K3') ?> &bull; 
+                                            <span class="font-mono text-slate-400"><?= htmlspecialchars($item['kode_apd']) ?></span>
+                                        </div>
+                                    </div>
+                                    <div class="text-right flex-shrink-0">
+                                        <strong class="text-sm font-black text-[#005b96] font-mono"><?= $item['jumlah_pinjam'] ?> Unit</strong>
+                                        <div class="mt-1">
+                                            <?php if ($item['status_pinjam'] === 'DIPINJAM'): ?>
+                                                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                                                    Belum Kembali
+                                                </span>
+                                            <?php else: ?>
+                                                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                                    Sudah ACC
+                                                </span>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
                     </div>
-                </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 py-6 text-xs">
-                    <div class="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800">
-                        <span class="text-slate-500 block mb-1">Nama Peminjam</span>
-                        <strong class="text-sm text-white"><?= htmlspecialchars($highlightLoan['nama_peminjam']) ?></strong>
-                        <span class="text-slate-400 block mt-0.5"><?= htmlspecialchars($highlightLoan['bagian_unit']) ?></span>
+                    <!-- Instruksi Pengembalian -->
+                    <div class="p-3.5 rounded-xl bg-sky-50 border border-sky-100 text-xs text-sky-900 leading-relaxed">
+                        <strong>PROSEDUR K3:</strong> Kembalikan seluruh fisik APD ke Pengawas K3 saat pergantian shift. Pengawas akan melakukan verifikasi fisik kelayakan dan menutup status pinjam dengan tombol ACC.
                     </div>
-                    <div class="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800">
-                        <span class="text-slate-500 block mb-1">Peralatan APD</span>
-                        <strong class="text-sm text-white"><?= htmlspecialchars($highlightLoan['nama_apd']) ?></strong>
-                        <span class="text-slate-400 block mt-0.5">Jumlah: <strong><?= $highlightLoan['jumlah_pinjam'] ?> Unit</strong></span>
-                    </div>
-                    <div class="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800">
-                        <span class="text-slate-500 block mb-1">Waktu Pengambilan</span>
-                        <strong class="text-sm text-white"><?= date('d M Y', strtotime($highlightLoan['waktu_pinjam'])) ?></strong>
-                        <span class="text-slate-400 block mt-0.5"><?= date('H:i:s', strtotime($highlightLoan['waktu_pinjam'])) ?> WITA</span>
-                    </div>
-                    <div class="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800">
-                        <span class="text-slate-500 block mb-1">Status Verifikasi</span>
-                        <?php if ($highlightLoan['status_pinjam'] === 'DIPINJAM'): ?>
-                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30">
-                                SEDANG DIPINJAM
-                            </span>
-                        <?php else: ?>
-                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-                                SUDAH DIKEMBALIKAN
-                            </span>
-                        <?php endif; ?>
-                    </div>
-                </div>
-
-                <div class="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-200 flex items-center justify-between">
-                    <span class="flex items-center gap-2">
-                        <svg class="w-4 h-4 text-amber-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                        Simpan tangkapan layar (screenshot) kode ini sebagai tanda bukti resmi.
-                    </span>
-                    <button onclick="window.print()" class="px-3 py-1 rounded-lg bg-amber-500 text-slate-950 font-bold text-[11px] hover:bg-amber-400 transition-all">
-                        Cetak / Simpan PDF
-                    </button>
                 </div>
             </div>
         <?php endif; ?>
 
-        <!-- Form Pencarian Peminjaman -->
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
-            <form method="GET" action="status_pinjam.php" class="flex flex-col sm:flex-row gap-3">
-                <div class="relative flex-grow">
-                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                        </svg>
-                    </div>
-                    <input type="text" name="q" value="<?= htmlspecialchars($searchQuery) ?>"
-                        placeholder="Cari berdasarkan Kode Pinjam (PINJ-XXXX), Nama Peminjam, atau Unit..."
-                        class="w-full pl-11 pr-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm">
-                </div>
-                <button type="submit"
-                    class="py-2.5 px-5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-xl text-sm transition-all shadow-md">
-                    Cari Data
+        <!-- Form Pencarian Real-time -->
+        <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+            <form method="GET" action="status_pinjam.php" class="flex gap-2">
+                <input type="text" name="q" value="<?= htmlspecialchars($searchQuery) ?>"
+                    placeholder="Ketik Kode Pinjam (PINJ-...), Nama, atau Bagian..."
+                    class="sipad-input flex-grow px-4 py-2.5 rounded-xl text-xs sm:text-sm text-slate-900 placeholder-slate-400">
+                <button type="submit" class="btn-pelindo-primary touch-target px-5 rounded-xl text-xs font-bold flex-shrink-0">
+                    Cari
                 </button>
-                <?php if ($searchQuery !== ''): ?>
-                    <a href="status_pinjam.php" class="py-2.5 px-4 bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium rounded-xl text-sm text-center transition-all">
-                        Reset
-                    </a>
-                <?php endif; ?>
             </form>
         </div>
 
-        <!-- Tabel Daftar Peminjaman Aktif & Terbaru -->
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl shadow-xl overflow-hidden">
-            <div class="p-5 border-b border-slate-800 flex items-center justify-between">
-                <h3 class="font-bold text-white text-base">Daftar Sirkulasi APD Terkini</h3>
-                <span class="text-xs text-slate-400">Total: <?= count($loanList) ?> Transaksi</span>
+        <!-- Daftar Kartu Peminjaman (Mobile First Stacked Cards) -->
+        <div class="space-y-3">
+            <div class="flex items-center justify-between px-1">
+                <h3 class="text-xs sm:text-sm font-bold text-slate-700">
+                    <?= ($searchQuery !== '') ? "Hasil Pencarian: '" . htmlspecialchars($searchQuery) . "'" : "Daftar Transaksi Peminjaman Terkini" ?>
+                </h3>
+                <span class="text-[11px] text-slate-500 font-mono"><?= count($loanList) ?> Transaksi</span>
             </div>
 
-            <div class="overflow-x-auto">
-                <table class="w-full text-left text-sm text-slate-300">
-                    <thead class="bg-slate-950/60 text-xs text-slate-400 uppercase tracking-wider border-b border-slate-800 font-semibold">
-                        <tr>
-                            <th class="px-5 py-3.5">Kode Pinjam</th>
-                            <th class="px-5 py-3.5">Peminjam</th>
-                            <th class="px-5 py-3.5">Peralatan APD</th>
-                            <th class="px-5 py-3.5">Waktu Pinjam</th>
-                            <th class="px-5 py-3.5">Status & Otorisasi</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-800">
-                        <?php if (empty($loanList)): ?>
-                            <tr>
-                                <td colspan="5" class="px-5 py-8 text-center text-slate-500">
-                                    Tidak ada data peminjaman yang cocok dengan kriteria pencarian.
-                                </td>
-                            </tr>
-                        <?php else: ?>
-                            <?php foreach ($loanList as $row): ?>
-                                <tr class="hover:bg-slate-800/40 transition-colors">
-                                    <td class="px-5 py-4 font-mono font-bold text-amber-400 text-xs">
-                                        <a href="/status_pinjam.php?kode=<?= urlencode($row['kode_pinjam']) ?>" class="hover:underline">
-                                            <?= htmlspecialchars($row['kode_pinjam']) ?>
-                                        </a>
-                                    </td>
-                                    <td class="px-5 py-4">
-                                        <div class="font-semibold text-white"><?= htmlspecialchars($row['nama_peminjam']) ?></div>
-                                        <div class="text-xs text-slate-400"><?= htmlspecialchars($row['bagian_unit']) ?></div>
-                                    </td>
-                                    <td class="px-5 py-4">
-                                        <div class="text-white"><?= htmlspecialchars($row['nama_apd']) ?></div>
-                                        <div class="text-xs text-slate-400"><?= $row['jumlah_pinjam'] ?> Unit (<?= htmlspecialchars($row['kode_apd']) ?>)</div>
-                                    </td>
-                                    <td class="px-5 py-4 text-xs text-slate-400">
-                                        <?= date('d M Y, H:i', strtotime($row['waktu_pinjam'])) ?>
-                                    </td>
-                                    <td class="px-5 py-4">
-                                        <?php if ($row['status_pinjam'] === 'DIPINJAM'): ?>
-                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20">
-                                                <span class="w-1.5 h-1.5 rounded-full bg-amber-400 mr-1.5 animate-pulse"></span>
-                                                Dipinjam
-                                            </span>
-                                        <?php else: ?>
-                                            <div>
-                                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                                                    Dikembalikan
-                                                </span>
-                                                <?php if (!empty($row['nama_pengawas'])): ?>
-                                                    <div class="text-[10px] text-slate-400 mt-1">
-                                                        ACC: <?= htmlspecialchars($row['nama_pengawas']) ?>
-                                                    </div>
-                                                <?php endif; ?>
-                                            </div>
-                                        <?php endif; ?>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
-            </div>
+            <?php if (empty($loanList)): ?>
+                <div class="bg-white rounded-2xl p-8 text-center text-xs text-slate-500 border border-slate-200">
+                    Tidak ada riwayat peminjaman yang cocok dengan kriteria pencarian Anda.
+                </div>
+            <?php else: ?>
+                <?php foreach ($loanList as $l): ?>
+                    <a href="status_pinjam.php?kode=<?= urlencode($l['kode_pinjam']) ?>"
+                        class="bg-white rounded-xl p-4 block border border-slate-200 hover:border-[#0080c0] hover:shadow-md transition-all space-y-2">
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="font-mono font-bold text-[#005b96]"><?= htmlspecialchars($l['kode_pinjam']) ?></span>
+                            <?php if ($l['status_pinjam'] === 'DIPINJAM'): ?>
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                                    Sedang Dipinjam
+                                </span>
+                            <?php else: ?>
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                    Sudah Kembali
+                                </span>
+                            <?php endif; ?>
+                        </div>
+
+                        <div class="text-xs">
+                            <div class="font-bold text-slate-900"><?= htmlspecialchars($l['nama_peminjam']) ?></div>
+                            <div class="text-slate-500 text-[11px]"><?= htmlspecialchars($l['bagian_unit']) ?></div>
+                        </div>
+
+                        <div class="p-2.5 rounded-lg bg-slate-50 border border-slate-200 text-xs flex justify-between items-center">
+                            <div>
+                                <span class="text-slate-800 font-medium"><?= htmlspecialchars($l['nama_apd']) ?></span>
+                                <span class="text-slate-400 text-[10px] block font-mono"><?= htmlspecialchars($l['kode_apd']) ?></span>
+                            </div>
+                            <span class="font-mono font-bold text-[#005b96]"><?= $l['jumlah_pinjam'] ?> Unit</span>
+                        </div>
+
+                        <div class="text-[10px] text-slate-400 flex justify-between pt-1">
+                            <span>Waktu: <?= date('d M Y, H:i', strtotime($l['waktu_pinjam'])) ?></span>
+                            <span class="text-[#005b96] font-semibold hover:underline">Lihat Rincian Tiket &rarr;</span>
+                        </div>
+                    </a>
+                <?php endforeach; ?>
+            <?php endif; ?>
         </div>
 
     </main>
 
-    <footer class="border-t border-slate-800 bg-slate-950 py-6 text-center text-xs text-slate-500">
-        SIPAD K3 Operasional &bull; Sistem Inventaris dan Peminjaman APD &copy; 2026.
-    </footer>
+    <!-- Mobile Bottom Navigation -->
+    <nav class="mobile-bottom-nav flex sm:hidden justify-around items-center">
+        <a href="/index.php" class="mobile-nav-item">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+            </svg>
+            <span>Pinjam APD</span>
+        </a>
+        <a href="/status_pinjam.php" class="mobile-nav-item active">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <span>Cek Status</span>
+        </a>
+        <a href="/login.php" class="mobile-nav-item">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+            </svg>
+            <span>Petugas</span>
+        </a>
+    </nav>
+
+    <script>
+        function salinKode(kode) {
+            navigator.clipboard.writeText(kode).then(() => {
+                const el = document.getElementById('salin-text');
+                if (el) {
+                    el.textContent = 'Tersalin!';
+                    setTimeout(() => { el.textContent = 'Salin Kode'; }, 2000);
+                }
+            }).catch(() => {
+                alert('Kode: ' + kode);
+            });
+        }
+    </script>
 </body>
 </html>

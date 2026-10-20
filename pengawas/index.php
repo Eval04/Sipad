@@ -1,6 +1,7 @@
 <?php
 /**
  * Dashboard Pengawas: Otorisasi Pengembalian Satu Pintu & Pemeriksaan Fisik APD
+ * Identitas Korporat PT Pelabuhan Indonesia (Pelindo) - Clean Light Enterprise Theme
  * Sistem Inventaris dan Peminjaman APD (Sipad)
  */
 declare(strict_types=1);
@@ -51,224 +52,244 @@ $stmtCountToday->execute([$today]);
 $countReturnedToday = (int)$stmtCountToday->fetchColumn();
 ?>
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="bg-slate-50">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Pengawas K3 - Otorisasi ACC Pengembalian</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Dashboard Pengawas K3 - Pelindo</title>
+    <script src="/assets/js/tailwind.min.js"></script>
+    <link rel="icon" type="image/svg+xml" href="/assets/img/favicon.svg">
+    <link rel="alternate icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/assets/css/sipad-design-system.css">
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col">
+<body class="min-h-screen bg-slate-50 text-slate-900 flex flex-col pb-24 sm:pb-12 selection:bg-sky-500 selection:text-white">
 
-    <!-- Top Navigation -->
-    <header class="bg-slate-900 border-b border-slate-800 sticky top-0 z-40">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+    <!-- Top Sticky Corporate Header -->
+    <header class="bg-[#003e74] text-white sticky top-0 z-40 shadow-md">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-xl bg-emerald-500 text-slate-950 flex items-center justify-center font-bold shadow-md shadow-emerald-500/20">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
+                <div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center p-1.5 shadow-sm">
+                    <img src="/assets/img/pelindo-emblem.svg" alt="Pelindo" class="w-7 h-7">
                 </div>
                 <div>
-                    <span class="text-base font-bold text-white block leading-tight">DASHBOARD PENGAWAS</span>
-                    <span class="text-[10px] text-emerald-400 font-semibold tracking-wider uppercase">Verifikasi Fisik & ACC Pengembalian</span>
+                    <div class="flex items-center gap-2">
+                        <img src="/assets/img/pelindo-logo-white.svg" alt="Pelindo" class="h-4 sm:h-5 w-auto">
+                        <span class="text-xs sm:text-sm font-black tracking-tight text-white border-l border-sky-400/40 pl-2">PENGAWAS</span>
+                    </div>
+                    <span class="text-[10px] text-sky-200 font-mono tracking-wider uppercase block">Inspeksi Pengembalian Fisik APD</span>
                 </div>
             </div>
 
-            <div class="flex items-center gap-4">
-                <div class="hidden sm:flex flex-col text-right text-xs">
-                    <strong class="text-slate-200"><?= htmlspecialchars($currentUser['nama_lengkap']) ?></strong>
-                    <span class="text-slate-400 capitalize">Role: <?= htmlspecialchars($currentUser['role']) ?></span>
+            <!-- Header Right Actions -->
+            <div class="flex items-center gap-3">
+                <div class="hidden md:flex flex-col text-right text-xs">
+                    <strong class="text-white"><?= htmlspecialchars($currentUser['nama_lengkap']) ?></strong>
+                    <span class="text-sky-200 font-mono text-[10px] uppercase">Pengawas K3 Lapangan</span>
                 </div>
 
                 <?php if ($currentUser['role'] === 'admin'): ?>
-                    <a href="/admin/index.php" class="text-xs px-3 py-1.5 rounded-lg bg-amber-500 text-slate-950 font-bold hover:bg-amber-400 transition-all">
-                        Ke Menu Admin
+                    <a href="/admin/index.php" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#0080c0] hover:bg-[#006fb3] text-white text-xs font-bold transition-colors shadow-sm">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/>
+                        </svg>
+                        <span>Panel Admin</span>
                     </a>
                 <?php endif; ?>
 
-                <a href="/logout.php" class="text-xs px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 hover:bg-red-500 hover:text-white border border-slate-700 transition-all flex items-center gap-1.5">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <a href="/logout.php" class="p-2 sm:px-3 sm:py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors flex items-center gap-1 text-xs font-semibold" title="Keluar">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
                     </svg>
-                    Keluar
+                    <span class="hidden sm:inline">Keluar</span>
                 </a>
             </div>
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow space-y-8 w-full">
+    <main class="max-w-6xl mx-auto px-4 sm:px-6 py-6 flex-grow space-y-6 w-full">
 
-        <!-- Banner Flash Alert -->
+        <!-- Flash Messages -->
         <?php if ($success): ?>
-            <div class="p-4 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-200 text-sm flex items-center gap-3">
-                <svg class="w-5 h-5 text-emerald-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs sm:text-sm flex items-center gap-3 shadow-sm">
+                <svg class="w-5 h-5 text-emerald-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                 </svg>
-                <div><?= htmlspecialchars($success) ?></div>
+                <div class="leading-relaxed font-medium"><?= htmlspecialchars($success) ?></div>
             </div>
         <?php endif; ?>
 
         <?php if ($error): ?>
-            <div class="p-4 rounded-2xl bg-red-500/15 border border-red-500/30 text-red-200 text-sm flex items-center gap-3">
-                <svg class="w-5 h-5 text-red-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="p-4 rounded-xl bg-red-50 border border-red-200 text-red-800 text-xs sm:text-sm flex items-center gap-3 shadow-sm">
+                <svg class="w-5 h-5 text-red-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
-                <div><?= htmlspecialchars($error) ?></div>
+                <div class="leading-relaxed font-medium"><?= htmlspecialchars($error) ?></div>
             </div>
         <?php endif; ?>
 
-        <!-- Panel Status & Indikator Validasi WiFi -->
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
-            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-lg flex items-center justify-between">
+        <!-- Telemetry & Status Cards (Pelindo Corporate 3 Columns) -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+            
+            <!-- Antrean Menunggu ACC -->
+            <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex items-center justify-between border-l-4 border-l-amber-500">
                 <div>
-                    <span class="text-xs text-slate-400 block font-medium">Menunggu Otorisasi ACC</span>
-                    <strong class="text-3xl font-extrabold text-amber-400 mt-1 block"><?= count($activeLoans) ?></strong>
-                    <span class="text-[11px] text-slate-500">Unit APD belum kembali</span>
+                    <span class="text-xs text-slate-500 font-semibold block uppercase">Menunggu Pemeriksaan</span>
+                    <strong class="text-3xl font-extrabold text-amber-600 mt-0.5 block"><?= count($activeLoans) ?></strong>
+                    <span class="text-[11px] text-slate-400">Unit belum diverifikasi</span>
                 </div>
-                <div class="w-12 h-12 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center">
+                <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
                 </div>
             </div>
 
-            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-lg flex items-center justify-between">
+            <!-- Di-ACC Hari Ini -->
+            <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex items-center justify-between border-l-4 border-l-emerald-500">
                 <div>
-                    <span class="text-xs text-slate-400 block font-medium">Selesai Di-ACC Hari Ini</span>
-                    <strong class="text-3xl font-extrabold text-emerald-400 mt-1 block"><?= $countReturnedToday ?></strong>
-                    <span class="text-[11px] text-slate-500">Pemeriksaan fisik rampung</span>
+                    <span class="text-xs text-slate-500 font-semibold block uppercase">Selesai Di-ACC Hari Ini</span>
+                    <strong class="text-3xl font-extrabold text-emerald-600 mt-0.5 block"><?= $countReturnedToday ?></strong>
+                    <span class="text-[11px] text-slate-400">Inspeksi fisik tuntas</span>
                 </div>
-                <div class="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center">
+                <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
                 </div>
             </div>
 
-            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-lg flex flex-col justify-between">
+            <!-- Network Status -->
+            <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex flex-col justify-between border-l-4 border-l-[#005b96]">
                 <div class="flex items-center justify-between">
-                    <span class="text-xs text-slate-400 font-medium">Validasi Jaringan WiFi</span>
+                    <span class="text-xs text-slate-500 font-semibold uppercase">Jaringan WiFi Kantor</span>
                     <?php if ((int)($wifiSettings['is_wifi_check_enabled'] ?? 0) === 1): ?>
-                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-                            AKTIF
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                            <span>AKTIF</span>
                         </span>
                     <?php else: ?>
-                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-800 text-slate-400 border border-slate-700">
-                            NONAKTIF
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-600 border border-slate-200">
+                            BYPASS (OFF)
                         </span>
                     <?php endif; ?>
                 </div>
-                <div class="mt-2 text-xs text-slate-300">
-                    <div class="font-semibold text-white truncate"><?= htmlspecialchars($wifiSettings['nama_jaringan'] ?? 'WiFi Kantor') ?></div>
-                    <div class="text-[11px] text-slate-500 mt-0.5">IP Klien: <span class="font-mono text-slate-400"><?= htmlspecialchars($currentClientIp) ?></span></div>
+                <div class="mt-2 text-xs">
+                    <div class="font-bold text-slate-900 truncate"><?= htmlspecialchars($wifiSettings['nama_jaringan'] ?? 'WiFi Kantor') ?></div>
+                    <div class="text-[11px] text-slate-500 font-mono mt-0.5">IP Anda: <?= htmlspecialchars($currentClientIp) ?></div>
                 </div>
             </div>
         </div>
 
-        <!-- SECTION DAFTAR APD SEDANG DIPINJAM (ACTION ACC) -->
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl shadow-xl overflow-hidden">
-            <div class="p-5 border-b border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-900/60">
+        <!-- SECTION: ANTREAN VERIFIKASI PEMINJAMAN AKTIF -->
+        <section class="space-y-4">
+            <div class="flex items-center justify-between">
                 <div>
-                    <h2 class="text-lg font-bold text-white flex items-center gap-2">
-                        <span>Peminjaman Aktif Memerlukan Pemeriksaan</span>
-                        <span class="px-2 py-0.5 rounded-full text-xs font-bold bg-amber-500/20 text-amber-400">
-                            <?= count($activeLoans) ?> Antrean
+                    <h2 class="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
+                        <span>Antrean Pemeriksaan Fisik APD Lapangan</span>
+                        <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-amber-100 text-amber-800">
+                            <?= count($activeLoans) ?>
                         </span>
                     </h2>
-                    <p class="text-xs text-slate-400 mt-0.5">Lakukan inspeksi fisik saat peminjam menyerahkan barang di ruang APD</p>
+                    <p class="text-xs text-slate-500 mt-0.5">Lakukan inspeksi visual & kelayakan saat pekerja mengembalikan barang di gudang K3</p>
                 </div>
             </div>
 
             <?php if (empty($activeLoans)): ?>
-                <div class="p-12 text-center space-y-3">
-                    <div class="w-12 h-12 rounded-full bg-emerald-500/10 text-emerald-400 mx-auto flex items-center justify-center">
+                <!-- Empty State -->
+                <div class="bg-white rounded-2xl p-8 sm:p-12 text-center space-y-3 border border-slate-200 shadow-sm">
+                    <div class="w-12 h-12 rounded-full bg-emerald-50 text-emerald-600 mx-auto flex items-center justify-center border border-emerald-100">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                         </svg>
                     </div>
-                    <h4 class="font-bold text-white text-base">Tidak Ada Peminjaman Aktif</h4>
-                    <p class="text-xs text-slate-400 max-w-sm mx-auto">
-                        Seluruh unit APD yang dipinjam saat ini sudah dikembalikan atau belum ada peminjaman baru dari pekerja lapangan.
+                    <h3 class="font-bold text-slate-900 text-sm sm:text-base">Tidak Ada Antrean Peminjaman Aktif</h3>
+                    <p class="text-xs text-slate-500 max-w-sm mx-auto leading-relaxed">
+                        Seluruh peralatan APD yang dipinjam saat ini sudah di-ACC pengembaliannya atau belum ada peminjaman baru dari pekerja lapangan.
                     </p>
                 </div>
             <?php else: ?>
-                <div class="divide-y divide-slate-800">
+                <!-- List of Inspection Cards (Mobile-First) -->
+                <div class="space-y-3">
                     <?php foreach ($activeLoans as $loan): ?>
-                        <div class="p-5 sm:p-6 hover:bg-slate-800/30 transition-colors flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                        <div class="bg-white rounded-2xl p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 border border-slate-200 shadow-sm border-l-4 border-l-[#005b96]">
                             
-                            <!-- Detail Info Peminjaman -->
+                            <!-- Left: Loan Info -->
                             <div class="space-y-2 flex-grow">
-                                <div class="flex flex-wrap items-center gap-2.5">
-                                    <span class="px-2.5 py-1 rounded-md bg-slate-800 border border-slate-700 font-mono text-xs font-bold text-amber-400">
+                                <div class="flex flex-wrap items-center gap-2">
+                                    <span class="px-2.5 py-0.5 rounded bg-slate-100 border border-slate-200 font-mono text-xs font-bold text-[#005b96]">
                                         <?= htmlspecialchars($loan['kode_pinjam']) ?>
                                     </span>
-                                    <span class="text-xs text-slate-400 flex items-center gap-1">
-                                        <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <span class="text-[11px] text-slate-500 flex items-center gap-1 font-mono">
+                                        <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                         </svg>
-                                        Dipinjam: <?= date('d M Y, H:i', strtotime($loan['waktu_pinjam'])) ?> WITA
+                                        Dipinjam: <?= date('d M, H:i', strtotime($loan['waktu_pinjam'])) ?> WITA
                                     </span>
                                 </div>
 
-                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1 text-xs">
-                                    <div>
-                                        <span class="text-slate-500 block">Identitas Peminjam</span>
-                                        <strong class="text-sm text-white"><?= htmlspecialchars($loan['nama_peminjam']) ?></strong>
-                                        <span class="text-slate-400 block"><?= htmlspecialchars($loan['bagian_unit']) ?></span>
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4 pt-1 text-xs">
+                                    <!-- Peminjam -->
+                                    <div class="p-3 rounded-xl bg-slate-50 border border-slate-100">
+                                        <span class="text-slate-400 text-[10px] uppercase font-bold block">Karyawan</span>
+                                        <strong class="text-sm text-slate-900 block mt-0.5 truncate"><?= htmlspecialchars($loan['nama_peminjam']) ?></strong>
+                                        <span class="text-slate-600 text-[11px] block"><?= htmlspecialchars($loan['bagian_unit']) ?></span>
+                                        <a href="https://wa.me/<?= preg_replace('/[^0-9]/', '', $loan['no_hp_peminjam']) ?>" target="_blank" class="text-[#005b96] hover:underline font-mono text-[11px] inline-flex items-center gap-1 mt-1 font-semibold">
+                                            <span>WA: <?= htmlspecialchars($loan['no_hp_peminjam']) ?></span>
+                                        </a>
                                     </div>
-                                    <div>
-                                        <span class="text-slate-500 block">Peralatan APD</span>
-                                        <strong class="text-sm text-white"><?= htmlspecialchars($loan['nama_apd']) ?></strong>
-                                        <span class="text-slate-400 block"><?= htmlspecialchars($loan['ukuran_spesifikasi'] ?? 'Standard') ?></span>
+
+                                    <!-- APD Info -->
+                                    <div class="p-3 rounded-xl bg-slate-50 border border-slate-100">
+                                        <span class="text-slate-400 text-[10px] uppercase font-bold block">Peralatan APD</span>
+                                        <strong class="text-sm text-slate-900 block mt-0.5"><?= htmlspecialchars($loan['nama_apd']) ?></strong>
+                                        <span class="text-slate-600 text-[11px] block"><?= htmlspecialchars($loan['ukuran_spesifikasi'] ?? 'Standard K3') ?></span>
+                                        <span class="text-slate-400 font-mono text-[10px] block mt-1"><?= htmlspecialchars($loan['kode_apd']) ?></span>
                                     </div>
-                                    <div>
-                                        <span class="text-slate-500 block">Jumlah & Kontak</span>
-                                        <strong class="text-sm text-amber-400"><?= $loan['jumlah_pinjam'] ?> Unit</strong>
-                                        <span class="text-slate-400 block font-mono">WA: <?= htmlspecialchars($loan['no_hp_peminjam']) ?></span>
+
+                                    <!-- Kuantitas -->
+                                    <div class="p-3 rounded-xl bg-slate-50 border border-slate-100 flex flex-col justify-between">
+                                        <span class="text-slate-400 text-[10px] uppercase font-bold block">Jumlah Dipinjam</span>
+                                        <strong class="text-2xl font-black text-[#005b96]"><?= $loan['jumlah_pinjam'] ?> <span class="text-xs text-slate-500 font-normal">Unit</span></strong>
+                                        <span class="text-[10px] text-amber-700 font-semibold">Belum Kembali</span>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Tombol Aksi Otorisasi ACC (Kondisi Baik vs Rusak) -->
-                            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 flex-shrink-0">
-                                <!-- Tombol ACC Baik -->
-                                <form action="acc_proses.php" method="POST" onsubmit="return confirm('Konfirmasi ACC Pengembalian Kondisi Baik untuk <?= htmlspecialchars(addslashes($loan['nama_peminjam'])) ?>? Stok akan dipulihkan ke rak siap pakai.')">
+                            <!-- Right: Action Buttons -->
+                            <div class="flex flex-col sm:flex-row md:flex-col gap-2 flex-shrink-0 pt-2 md:pt-0 border-t md:border-t-0 border-slate-100">
+                                
+                                <!-- ACC Baik Button -->
+                                <form action="acc_proses.php" method="POST" onsubmit="return confirm('Konfirmasi ACC Pengembalian Kondisi Baik untuk <?= htmlspecialchars(addslashes($loan['nama_peminjam'])) ?>? Stok akan langsung dipulihkan ke rak siap pakai.')" class="w-full">
                                     <input type="hidden" name="action" value="acc_return">
                                     <input type="hidden" name="id_loan" value="<?= $loan['id_loan'] ?>">
                                     <input type="hidden" name="kondisi_kembali" value="BAIK">
                                     <input type="hidden" name="keterangan" value="Fisik utuh, bersih, dan layak pakai">
-                                    <button type="submit"
-                                        class="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-lg shadow-emerald-600/20 active:scale-95 transition-all flex items-center justify-center gap-2">
+                                    <button type="submit" class="btn-k3-green w-full touch-target px-4 py-2.5 rounded-xl text-xs flex items-center justify-center gap-2">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                                         </svg>
-                                        <span>[✓] ACC Baik</span>
+                                        <span>[✓] ACC Baik (Pulihkan)</span>
                                     </button>
                                 </form>
 
-                                <!-- Tombol ACC Rusak / Hilang (Buka Modal) -->
+                                <!-- ACC Rusak / Hilang Button (Opens Modal) -->
                                 <button type="button" onclick="openModalRusak('<?= $loan['id_loan'] ?>', '<?= htmlspecialchars(addslashes($loan['nama_peminjam'])) ?>', '<?= htmlspecialchars(addslashes($loan['nama_apd'])) ?>', '<?= $loan['jumlah_pinjam'] ?>')"
-                                    class="px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-xs font-bold shadow-lg shadow-red-600/20 active:scale-95 transition-all flex items-center justify-center gap-2">
+                                    class="btn-k3-red w-full touch-target px-4 py-2.5 rounded-xl text-xs flex items-center justify-center gap-2">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
                                     </svg>
                                     <span>[!] ACC Rusak/Hilang</span>
                                 </button>
 
-                                <!-- Tombol Batalkan Entri Fiktif -->
-                                <form action="acc_proses.php" method="POST" onsubmit="return confirm('Batalkan entri peminjaman ini karena salah input atau fiktif? Stok akan langsung dipulihkan.')">
+                                <!-- Cancel False Entry Button -->
+                                <form action="acc_proses.php" method="POST" onsubmit="return confirm('Batalkan entri peminjaman ini karena salah input atau fiktif? Stok barang akan segera dipulihkan.')" class="w-full">
                                     <input type="hidden" name="action" value="cancel_loan">
                                     <input type="hidden" name="id_loan" value="<?= $loan['id_loan'] ?>">
-                                    <button type="submit" title="Batalkan jika entri fiktif/salah input"
-                                        class="px-3 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-slate-200 text-xs border border-slate-700 transition-all flex items-center justify-center">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <button type="submit" class="w-full py-2 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-800 text-[11px] font-semibold border border-slate-200 transition-colors flex items-center justify-center gap-1.5" title="Batalkan jika salah input">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                                         </svg>
+                                        <span>Batal (Fiktif)</span>
                                     </button>
                                 </form>
                             </div>
@@ -276,86 +297,132 @@ $countReturnedToday = (int)$stmtCountToday->fetchColumn();
                     <?php endforeach; ?>
                 </div>
             <?php endif; ?>
-        </div>
+        </section>
 
-        <!-- RIWAYAT 10 ACC TERAKHIR -->
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl shadow-xl overflow-hidden">
-            <div class="p-5 border-b border-slate-800 flex items-center justify-between">
-                <h3 class="font-bold text-white text-base">Riwayat Verifikasi Pengembalian Terakhir</h3>
-                <span class="text-xs text-slate-500">10 Entri Terbaru</span>
+        <!-- SECTION: RIWAYAT 10 ACC TERAKHIR -->
+        <section class="space-y-4 pt-4">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h3 class="text-base font-bold text-slate-900">Riwayat Verifikasi Pengembalian</h3>
+                    <p class="text-xs text-slate-500 mt-0.5">10 Transaksi terakhir yang telah diinspeksi oleh Pengawas</p>
+                </div>
             </div>
-            <div class="overflow-x-auto">
-                <table class="w-full text-left text-xs text-slate-300">
-                    <thead class="bg-slate-950/60 text-slate-400 uppercase tracking-wider border-b border-slate-800 font-semibold">
-                        <tr>
-                            <th class="px-5 py-3">Kode Pinjam</th>
-                            <th class="px-5 py-3">Peminjam & Unit</th>
-                            <th class="px-5 py-3">Peralatan APD</th>
-                            <th class="px-5 py-3">Kondisi Fisik</th>
-                            <th class="px-5 py-3">Catatan Audit</th>
-                            <th class="px-5 py-3">Pengawas ACC</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-800">
-                        <?php if (empty($recentReturns)): ?>
+
+            <!-- Mobile View: Card List (<640px) -->
+            <div class="block sm:hidden space-y-2.5">
+                <?php if (empty($recentReturns)): ?>
+                    <div class="bg-white rounded-2xl p-6 text-center text-xs text-slate-500 border border-slate-200">
+                        Belum ada riwayat pengembalian yang tercatat.
+                    </div>
+                <?php else: ?>
+                    <?php foreach ($recentReturns as $r): ?>
+                        <div class="bg-white rounded-xl p-3.5 space-y-2 border border-slate-200 shadow-sm">
+                            <div class="flex items-center justify-between text-xs">
+                                <span class="font-mono font-bold text-[#005b96]"><?= htmlspecialchars($r['kode_pinjam']) ?></span>
+                                <?php if ($r['kondisi_kembali'] === 'BAIK'): ?>
+                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                        BAIK
+                                    </span>
+                                <?php else: ?>
+                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-50 text-red-700 border border-red-200">
+                                        <?= htmlspecialchars($r['kondisi_kembali']) ?>
+                                    </span>
+                                <?php endif; ?>
+                            </div>
+                            <div class="text-xs">
+                                <div class="font-bold text-slate-900"><?= htmlspecialchars($r['nama_peminjam']) ?> (<?= htmlspecialchars($r['bagian_unit']) ?>)</div>
+                                <div class="text-slate-600 mt-0.5"><?= htmlspecialchars($r['nama_apd']) ?> &bull; <?= $r['jumlah_pinjam'] ?> Unit</div>
+                            </div>
+                            <?php if (!empty($r['keterangan'])): ?>
+                                <div class="text-[11px] text-slate-600 bg-slate-50 p-2 rounded-lg border border-slate-200">
+                                    Catatan: <?= htmlspecialchars($r['keterangan']) ?>
+                                </div>
+                            <?php endif; ?>
+                            <div class="text-[10px] text-slate-400 flex justify-between pt-1 border-t border-slate-100">
+                                <span>ACC: <?= htmlspecialchars($r['nama_pengawas'] ?? 'Pengawas') ?></span>
+                                <span><?= date('d/m H:i', strtotime($r['waktu_acc'])) ?></span>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </div>
+
+            <!-- Desktop View: Table (>=640px) -->
+            <div class="hidden sm:block bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-sm">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs text-slate-700">
+                        <thead class="bg-slate-50 text-slate-600 uppercase tracking-wider border-b border-slate-200 font-bold text-[11px]">
                             <tr>
-                                <td colspan="6" class="px-5 py-6 text-center text-slate-500">Belum ada riwayat pengembalian yang tercatat.</td>
+                                <th class="px-5 py-3">Kode Pinjam</th>
+                                <th class="px-5 py-3">Peminjam</th>
+                                <th class="px-5 py-3">Peralatan APD</th>
+                                <th class="px-5 py-3 text-center">Kondisi Fisik</th>
+                                <th class="px-5 py-3">Catatan Audit</th>
+                                <th class="px-5 py-3">Pengawas ACC</th>
                             </tr>
-                        <?php else: ?>
-                            <?php foreach ($recentReturns as $r): ?>
-                                <tr class="hover:bg-slate-800/40 transition-colors">
-                                    <td class="px-5 py-3 font-mono font-bold text-slate-300"><?= htmlspecialchars($r['kode_pinjam']) ?></td>
-                                    <td class="px-5 py-3">
-                                        <div class="font-semibold text-white"><?= htmlspecialchars($r['nama_peminjam']) ?></div>
-                                        <div class="text-[11px] text-slate-500"><?= htmlspecialchars($r['bagian_unit']) ?></div>
-                                    </td>
-                                    <td class="px-5 py-3 text-white"><?= htmlspecialchars($r['nama_apd']) ?> (<?= $r['jumlah_pinjam'] ?>)</td>
-                                    <td class="px-5 py-3">
-                                        <?php if ($r['kondisi_kembali'] === 'BAIK'): ?>
-                                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">BAIK</span>
-                                        <?php else: ?>
-                                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-500/10 text-red-400 border border-red-500/20">
-                                                <?= htmlspecialchars($r['kondisi_kembali']) ?>
-                                            </span>
-                                        <?php endif; ?>
-                                    </td>
-                                    <td class="px-5 py-3 text-slate-400 max-w-xs truncate"><?= htmlspecialchars($r['keterangan'] ?? '-') ?></td>
-                                    <td class="px-5 py-3 text-slate-400">
-                                        <div><?= htmlspecialchars($r['nama_pengawas'] ?? 'Pengawas') ?></div>
-                                        <div class="text-[10px] text-slate-500"><?= date('d/m/Y H:i', strtotime($r['waktu_acc'])) ?></div>
-                                    </td>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <?php if (empty($recentReturns)): ?>
+                                <tr>
+                                    <td colspan="6" class="px-5 py-6 text-center text-slate-500">Belum ada riwayat pengembalian yang tercatat.</td>
                                 </tr>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
+                            <?php else: ?>
+                                <?php foreach ($recentReturns as $r): ?>
+                                    <tr class="hover:bg-slate-50 transition-colors">
+                                        <td class="px-5 py-3 font-mono font-bold text-[#005b96]"><?= htmlspecialchars($r['kode_pinjam']) ?></td>
+                                        <td class="px-5 py-3">
+                                            <div class="font-bold text-slate-900"><?= htmlspecialchars($r['nama_peminjam']) ?></div>
+                                            <div class="text-[11px] text-slate-500"><?= htmlspecialchars($r['bagian_unit']) ?></div>
+                                        </td>
+                                        <td class="px-5 py-3 text-slate-800"><?= htmlspecialchars($r['nama_apd']) ?> (<?= $r['jumlah_pinjam'] ?>)</td>
+                                        <td class="px-5 py-3 text-center">
+                                            <?php if ($r['kondisi_kembali'] === 'BAIK'): ?>
+                                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">BAIK</span>
+                                            <?php else: ?>
+                                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-red-50 text-red-700 border border-red-200">
+                                                    <?= htmlspecialchars($r['kondisi_kembali']) ?>
+                                                </span>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td class="px-5 py-3 text-slate-600 max-w-xs truncate"><?= htmlspecialchars($r['keterangan'] ?? '-') ?></td>
+                                        <td class="px-5 py-3 text-slate-600">
+                                            <div><?= htmlspecialchars($r['nama_pengawas'] ?? 'Pengawas') ?></div>
+                                            <div class="text-[10px] text-slate-400"><?= date('d/m/Y H:i', strtotime($r['waktu_acc'])) ?></div>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
             </div>
-        </div>
+        </section>
 
     </main>
 
     <!-- Modal Form ACC Rusak / Hilang -->
-    <div id="modal-rusak" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-700 rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl space-y-5 animate-in fade-in duration-200">
-            <div class="flex items-center justify-between pb-3 border-b border-slate-800">
-                <div class="flex items-center gap-2 text-red-400 font-bold text-base">
+    <div id="modal-rusak" class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 space-y-4 border border-slate-200 shadow-2xl animate-in fade-in duration-200">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                <div class="flex items-center gap-2 text-red-600 font-bold text-sm sm:text-base">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
                     </svg>
-                    <span>ACC Pengembalian Fisik: Rusak / Hilang</span>
+                    <span>ACC Pengembalian: Rusak / Hilang</span>
                 </div>
-                <button type="button" onclick="closeModalRusak()" class="text-slate-400 hover:text-white">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <button type="button" onclick="closeModalRusak()" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 bg-slate-100">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                     </svg>
                 </button>
             </div>
 
-            <div class="bg-slate-950/70 p-3.5 rounded-xl border border-slate-800 text-xs space-y-1">
-                <div>Peminjam: <strong id="modal-nama" class="text-white">-</strong></div>
-                <div>Barang: <strong id="modal-apd" class="text-white">-</strong> (<span id="modal-jumlah">1</span> Unit)</div>
-                <p class="text-[11px] text-amber-400 pt-1">
-                    * Catatan: Unit ini akan dialihkan ke 'Stok Rusak' dan tidak akan dipulihkan ke stok siap pakai sebelum diperbaiki oleh Admin.
+            <!-- Target Item Summary -->
+            <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 text-xs space-y-1">
+                <div>Peminjam: <strong id="modal-nama" class="text-slate-900">-</strong></div>
+                <div>Barang: <strong id="modal-apd" class="text-slate-900">-</strong> (<span id="modal-jumlah">1</span> Unit)</div>
+                <p class="text-[11px] text-amber-700 pt-1 leading-relaxed">
+                    * Perhatian: Unit ini akan dialihkan ke <strong>Stok Rusak</strong> dan dipisahkan dari inventaris siap pakai hingga diperbaiki oleh Admin.
                 </p>
             </div>
 
@@ -364,9 +431,8 @@ $countReturnedToday = (int)$stmtCountToday->fetchColumn();
                 <input type="hidden" id="modal-id-loan" name="id_loan" value="">
 
                 <div>
-                    <label class="block text-xs font-semibold text-slate-300 mb-1.5">Klasifikasi Kondisi Fisik</label>
-                    <select name="kondisi_kembali" required
-                        class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-xs focus:ring-2 focus:ring-red-500 focus:outline-none">
+                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">Klasifikasi Kondisi Fisik</label>
+                    <select name="kondisi_kembali" required class="sipad-input w-full px-3.5 py-2.5 rounded-xl text-xs sm:text-sm">
                         <option value="RUSAK_RINGAN">Rusak Ringan (Bisa Diperbaiki)</option>
                         <option value="RUSAK_BERAT" selected>Rusak Berat (Afkir / Perlu Penggantian)</option>
                         <option value="HILANG">Barang Hilang di Lapangan</option>
@@ -374,25 +440,52 @@ $countReturnedToday = (int)$stmtCountToday->fetchColumn();
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold text-slate-300 mb-1.5">Catatan Kerusakan / Kronologi Singkat</label>
-                    <textarea name="keterangan" rows="3" required
-                        placeholder="Contoh: Tali penahan putus, visor kacamata retak, dsb."
-                        class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-xs placeholder-slate-500 focus:ring-2 focus:ring-red-500 focus:outline-none"></textarea>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">Catatan Kerusakan / Kronologi Singkat</label>
+                    <textarea name="keterangan" rows="3" required placeholder="Contoh: Tali pengikat helm putus, lensa visor kacamata retak, dsb."
+                        class="sipad-input w-full px-3.5 py-2.5 rounded-xl text-xs sm:text-sm placeholder-slate-400"></textarea>
                 </div>
 
                 <div class="flex items-center justify-end gap-3 pt-2">
-                    <button type="button" onclick="closeModalRusak()"
-                        class="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 text-xs font-semibold">
+                    <button type="button" onclick="closeModalRusak()" class="px-4 py-2.5 rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 text-xs font-semibold">
                         Batal
                     </button>
-                    <button type="submit"
-                        class="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white text-xs font-bold shadow-md shadow-red-600/30">
+                    <button type="submit" class="btn-k3-red px-5 py-2.5 rounded-xl text-xs font-bold shadow-md">
                         Simpan ACC Rusak
                     </button>
                 </div>
             </form>
         </div>
     </div>
+
+    <!-- Mobile Bottom Navigation for Pengawas -->
+    <nav class="mobile-bottom-nav flex sm:hidden justify-around items-center">
+        <a href="/pengawas/index.php" class="mobile-nav-item active">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <span>Verifikasi ACC</span>
+        </a>
+        <a href="/index.php" class="mobile-nav-item">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+            </svg>
+            <span>Portal Publik</span>
+        </a>
+        <?php if ($currentUser['role'] === 'admin'): ?>
+            <a href="/admin/index.php" class="mobile-nav-item">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/>
+                </svg>
+                <span>Menu Admin</span>
+            </a>
+        <?php endif; ?>
+        <a href="/logout.php" class="mobile-nav-item">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013 3v1"/>
+            </svg>
+            <span>Keluar</span>
+        </a>
+    </nav>
 
     <script>
         function openModalRusak(idLoan, namaPeminjam, namaApd, jumlah) {

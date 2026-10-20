@@ -23,9 +23,17 @@ function runBlackboxTestSuite(): void {
     // Reset dan pastikan data awal siap
     $pdo->prepare("UPDATE wifi_settings SET ip_address = '127.0.0.1', kode_pin_gudang = '4821', is_wifi_check_enabled = 0 WHERE id_setting = 1")->execute();
 
-    // Ambil item uji APD-HLM-01
-    $stmtItem = $pdo->query("SELECT id_apd, stok_tersedia, stok_rusak FROM apd_items WHERE kode_apd = 'APD-HLM-01' LIMIT 1");
-    $itemApd = $stmtItem->fetch(PDO::FETCH_ASSOC);
+    // Ambil item uji APD apa saja yang memiliki stok tersedia (atau buat fixture jika belum ada)
+    $itemApd = $pdo->query("SELECT id_apd, stok_tersedia, stok_rusak FROM apd_items WHERE stok_tersedia > 0 LIMIT 1")->fetch(PDO::FETCH_ASSOC);
+    if (!$itemApd) {
+        $firstCatId = (int)$pdo->query("SELECT id_category FROM apd_categories LIMIT 1")->fetchColumn();
+        if (!$firstCatId) {
+            $pdo->exec("INSERT INTO apd_categories (kode_kategori, nama_kategori) VALUES ('KAT-KEPALA', 'Alat Pelindung Kepala')");
+            $firstCatId = (int)$pdo->lastInsertId();
+        }
+        $pdo->exec("INSERT INTO apd_items (id_category, kode_apd, nama_apd, ukuran_spesifikasi, stok_total, stok_tersedia, stok_rusak) VALUES ({$firstCatId}, 'APD-TEST-01', 'Safety Helmet Uji', 'All Size', 20, 20, 0)");
+        $itemApd = $pdo->query("SELECT id_apd, stok_tersedia, stok_rusak FROM apd_items WHERE kode_apd = 'APD-TEST-01' LIMIT 1")->fetch(PDO::FETCH_ASSOC);
+    }
     $idApd = (int)$itemApd['id_apd'];
 
     // -------------------------------------------------------------

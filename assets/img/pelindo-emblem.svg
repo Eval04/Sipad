@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="180 2350 1100 1200" width="128" height="128" role="img" aria-label="Emblem Pelindo">
+  <defs>
+    <style>
+      .p-core { fill: #005B96; }
+      .p-cyan { fill: #00A3E0; }
+    </style>
+  </defs>
+  <g id="pelindo-emblem">
+    <!-- Gelombang Port Cyan -->
+    <path class="p-cyan" d="M1224 2396l-417 0c-270 0 -491 221 -491 491l0 139 242 0 0 -139c0 -137 112 -249 249 -249l417 0 0 -242zm-908 871l0 242 242 0 0 -242 -242 0z"/>
+    <!-- Gelombang Port Deep Blue -->
+    <path class="p-core" d="M217 3267l99 0 0 -241 -99 0 0 241zm341 0l175 0c270 0 491 -220 491 -490l0 -381 -242 0 0 381c0 137 -112 249 -249 249l-175 0 0 241z"/>
+  </g>
+</svg>

@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="145 2320 5565 1220" width="534" height="117" role="img" aria-label="Logo PT Pelabuhan Indonesia (Pelindo)">
+  <defs>
+    <style>
+      .pelindo-blue { fill: #005B96; }
+      .pelindo-cyan { fill: #00A3E0; }
+    </style>
+  </defs>
+  <g id="pelindo-brand-logo">
+    <!-- Emblem Omba Pelabuhan (Kiri) -->
+    <path class="pelindo-cyan" d="M1224 2396l-417 0c-270 0 -491 221 -491 491l0 139 242 0 0 -139c0 -137 112 -249 249 -249l417 0 0 -242zm-908 871l0 242 242 0 0 -242 -242 0z"/>
+    <path class="pelindo-blue" d="M217 3267l99 0 0 -241 -99 0 0 241zm341 0l175 0c270 0 491 -220 491 -490l0 -381 -242 0 0 381c0 137 -112 249 -249 249l-175 0 0 241z"/>
+
+    <!-- Tipografi PELINDO (Kanan) -->
+    <!-- Huruf P -->
+    <path class="pelindo-blue" d="M1502 2634l106 0 265 0c103 0 187 84 187 187l0 36c0 102 -84 186 -187 186l-265 0 0 219 -106 0 0 -219 0 -109 0 -182 0 -118zm106 118l0 182 268 1c47 0 83 -35 83 -76l0 -32c0 -41 -33 -75 -80 -75l-271 0z"/>
+    <!-- Huruf E -->
+    <path class="pelindo-blue" d="M2238 2863l415 0 0 107 -415 0 0 125c0 34 29 63 63 63l462 0 0 100 -462 0c-90 0 -164 -73 -164 -163l0 -295c0 -90 74 -164 164 -164l462 0 0 101 -462 0c-34 0 -63 28 -63 63l0 63z"/>
+    <!-- Huruf L -->
+    <path class="pelindo-blue" d="M2848 2638l0 457c0 90 74 163 164 163l338 0 0 -100 -338 0c-34 0 -63 -29 -63 -63l0 -457 -101 0z"/>
+    <!-- Huruf I -->
+    <rect class="pelindo-blue" x="3446" y="2634" width="107" height="627"/>
+    <!-- Huruf N -->
+    <polygon class="pelindo-blue" points="3650,2640 3757,2717 4166,3038 4166,2640 4272,2640 4272,3258 4166,3181 3757,2869 3757,3258 3650,3258"/>
+    <!-- Huruf D -->
+    <path class="pelindo-blue" d="M4677 2640c171 0 310 138 310 309 0 171 -139 309 -310 309l-202 0 -13 0 -94 0 0 -618 94 0 13 0 202 0zm0 514c113 0 205 -92 205 -205 0 -113 -92 -204 -205 -204l-202 0 0 409 202 0z"/>
+    <!-- Huruf O -->
+    <path class="pelindo-blue" d="M5380 2640c170 0 309 138 309 309 0 171 -139 309 -309 309 -171 0 -310 -138 -310 -309 0 -171 139 -309 310 -309zm0 105c112 0 204 91 204 204 0 113 -92 205 -204 205 -113 0 -205 -92 -205 -205 0 -113 92 -204 205 -204z"/>
+  </g>
+</svg>

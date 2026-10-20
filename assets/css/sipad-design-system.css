@@ -1,0 +1,324 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+:root {
+    --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+
+    /* Corporate Brand Palette: PT Pelabuhan Indonesia (Pelindo) */
+    --pelindo-navy: #003e74;
+    --pelindo-primary: #005b96;
+    --pelindo-blue: #0080c0;
+    --pelindo-cyan: #00a3e0;
+    --pelindo-sky: #40c0ff;
+    --pelindo-cyan-light: #e0f2fe;
+
+    /* Clean Corporate Light Palette */
+    --bg-base: #f8fafc;        /* Slate-50 */
+    --bg-surface: #ffffff;     /* Pure White Card */
+    --bg-subtle: #f1f5f9;      /* Slate-100 */
+    --bg-muted: #e2e8f0;       /* Slate-200 */
+    
+    --border-subtle: #e2e8f0;  /* Slate-200 */
+    --border-strong: #cbd5e1;  /* Slate-300 */
+    --border-focus: #0080c0;
+    
+    --text-primary: #0f172a;   /* Slate-900 */
+    --text-secondary: #334155; /* Slate-700 */
+    --text-muted: #64748b;     /* Slate-500 */
+
+    /* HSE / K3 Safety Standard Colors */
+    --k3-green: #059669;       /* Emerald-600 */
+    --k3-green-light: #ecfdf5; /* Emerald-50 */
+    --k3-amber: #d97706;       /* Amber-600 */
+    --k3-amber-light: #fffbeb; /* Amber-50 */
+    --k3-red: #dc2626;         /* Red-600 */
+    --k3-red-light: #fef2f2;   /* Red-50 */
+}
+
+body {
+    font-family: var(--font-sans);
+    background-color: var(--bg-base);
+    color: var(--text-primary);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Base image & SVG bounds (Prevents unconstrained SVG blowup) */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+svg {
+    display: inline-block;
+    vertical-align: middle;
+    flex-shrink: 0;
+}
+
+/* Explicit SVG sizing utility fallbacks */
+.w-3\.5, svg.w-3\.5 { width: 0.875rem !important; height: 0.875rem !important; max-width: 0.875rem !important; max-height: 0.875rem !important; }
+.w-4, svg.w-4 { width: 1rem !important; height: 1rem !important; max-width: 1rem !important; max-height: 1rem !important; }
+.w-5, svg.w-5 { width: 1.25rem !important; height: 1.25rem !important; max-width: 1.25rem !important; max-height: 1.25rem !important; }
+.w-6, svg.w-6 { width: 1.5rem !important; height: 1.5rem !important; max-width: 1.5rem !important; max-height: 1.5rem !important; }
+.w-7, svg.w-7 { width: 1.75rem !important; height: 1.75rem !important; max-width: 1.75rem !important; max-height: 1.75rem !important; }
+.w-8, svg.w-8 { width: 2rem !important; height: 2rem !important; max-width: 2rem !important; max-height: 2rem !important; }
+
+/* Pelindo Corporate Header Fallbacks */
+header {
+    background-color: #003e74 !important;
+    color: #ffffff !important;
+}
+
+header a {
+    color: #ffffff !important;
+    text-decoration: none !important;
+}
+
+header img {
+    height: 1.25rem !important;
+    width: auto !important;
+}
+
+header .w-10 {
+    width: 2.5rem !important;
+    height: 2.5rem !important;
+}
+
+.font-mono {
+    font-family: var(--font-mono);
+}
+
+/* Pelindo Corporate Cards */
+.sipad-card {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+}
+
+.sipad-card-interactive {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.sipad-card-interactive:hover {
+    border-color: var(--pelindo-cyan);
+    box-shadow: 0 4px 12px -2px rgba(0, 91, 150, 0.08);
+}
+
+/* Touch Targets for Mobile */
+.touch-target {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Pelindo Primary Action Button */
+.btn-pelindo-primary {
+    background: linear-gradient(180deg, #006fb3 0%, #005b96 100%);
+    color: #ffffff;
+    font-weight: 700;
+    box-shadow: 0 1px 2px 0 rgba(0, 62, 116, 0.2);
+    border: 1px solid #005b96;
+    transition: all 0.15s ease;
+}
+
+.btn-pelindo-primary:hover {
+    background: linear-gradient(180deg, #0080c0 0%, #006fb3 100%);
+    box-shadow: 0 2px 6px 0 rgba(0, 91, 150, 0.3);
+    color: #ffffff;
+}
+
+.btn-pelindo-primary:active {
+    transform: translateY(1px);
+    box-shadow: 0 1px 2px 0 rgba(0, 62, 116, 0.2);
+}
+
+/* Pelindo Secondary Outline Button */
+.btn-pelindo-secondary {
+    background-color: #ffffff;
+    color: var(--pelindo-primary);
+    border: 1.5px solid var(--pelindo-primary);
+    font-weight: 700;
+    transition: all 0.15s ease;
+}
+
+.btn-pelindo-secondary:hover {
+    background-color: var(--pelindo-cyan-light);
+    color: var(--pelindo-navy);
+}
+
+/* K3 Green Action Button (ACC Baik) */
+.btn-k3-green {
+    background: linear-gradient(180deg, #10b981 0%, #059669 100%);
+    color: #ffffff;
+    font-weight: 700;
+    border: 1px solid #047857;
+    box-shadow: 0 1px 2px 0 rgba(5, 150, 105, 0.2);
+    transition: all 0.15s ease;
+}
+
+.btn-k3-green:hover {
+    background: #047857;
+    color: #ffffff;
+}
+
+/* K3 Red Danger Button (ACC Rusak) */
+.btn-k3-red {
+    background: linear-gradient(180deg, #ef4444 0%, #dc2626 100%);
+    color: #ffffff;
+    font-weight: 700;
+    border: 1px solid #b91c1c;
+    box-shadow: 0 1px 2px 0 rgba(220, 38, 38, 0.2);
+    transition: all 0.15s ease;
+}
+
+.btn-k3-red:hover {
+    background: #b91c1c;
+    color: #ffffff;
+}
+
+/* Legacy utility classes mapping to Pelindo palette */
+.btn-amber-tactile {
+    background: linear-gradient(180deg, #006fb3 0%, #005b96 100%);
+    color: #ffffff !important;
+    font-weight: 700;
+    border: 1px solid #005b96;
+    box-shadow: 0 1px 3px 0 rgba(0, 91, 150, 0.25);
+    transition: all 0.15s ease;
+}
+.btn-amber-tactile:hover {
+    background: linear-gradient(180deg, #0080c0 0%, #006fb3 100%);
+    color: #ffffff !important;
+}
+
+.btn-emerald-tactile {
+    background: linear-gradient(180deg, #10b981 0%, #059669 100%);
+    color: #ffffff !important;
+    font-weight: 700;
+    border: 1px solid #047857;
+    transition: all 0.15s ease;
+}
+
+.btn-red-tactile {
+    background: linear-gradient(180deg, #ef4444 0%, #dc2626 100%);
+    color: #ffffff !important;
+    font-weight: 700;
+    border: 1px solid #b91c1c;
+    transition: all 0.15s ease;
+}
+
+/* Segmented PIN Input Box */
+.pin-input-segment {
+    font-family: var(--font-mono);
+    font-size: 1.75rem;
+    font-weight: 800;
+    text-align: center;
+    background-color: #f8fafc;
+    border: 2px solid #cbd5e1;
+    border-radius: 0.75rem;
+    color: var(--pelindo-navy);
+    transition: all 0.2s ease;
+}
+
+.pin-input-segment:focus {
+    outline: none;
+    border-color: var(--pelindo-blue);
+    background-color: #ffffff;
+    box-shadow: 0 0 0 4px rgba(0, 128, 192, 0.15);
+}
+
+/* Clean Custom Form Inputs */
+.sipad-input {
+    background-color: #ffffff;
+    border: 1.5px solid #cbd5e1;
+    color: var(--text-primary);
+    transition: all 0.2s ease;
+}
+
+.sipad-input:focus {
+    outline: none;
+    border-color: var(--pelindo-blue);
+    box-shadow: 0 0 0 3px rgba(0, 128, 192, 0.15);
+}
+
+/* Hide scrollbar */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* Subtle Corporate Pattern */
+.bg-grid-pattern {
+    background-color: var(--bg-base);
+    background-image: radial-gradient(rgba(0, 91, 150, 0.06) 1px, transparent 1px);
+    background-size: 20px 20px;
+}
+
+/* Mobile Bottom Navigation Bar (Clean Corporate Light Mode) */
+.mobile-bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    background-color: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid var(--border-subtle);
+    padding: 0.5rem 1rem env(safe-area-inset-bottom, 0.5rem);
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.04);
+}
+
+.mobile-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0.375rem 0.5rem;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-decoration: none;
+    border-radius: 0.5rem;
+    transition: all 0.15s ease;
+}
+
+.mobile-nav-item:hover,
+.mobile-nav-item.active {
+    color: var(--pelindo-primary);
+    font-weight: 700;
+}
+
+.mobile-nav-item svg {
+    width: 1.25rem;
+    height: 1.25rem;
+    margin-bottom: 0.25rem;
+}
+
+/* Print Optimization for Reports and Warehouse Posters */
+@media print {
+    .no-print {
+        display: none !important;
+    }
+    .print-only {
+        display: block !important;
+    }
+    body {
+        background-color: #ffffff !important;
+        color: #0f172a !important;
+        padding: 0 !important;
+    }
+    .print-border {
+        border: 1px solid #cbd5e1 !important;
+    }
+    .print-bg-gray {
+        background-color: #f8fafc !important;
+        color: #0f172a !important;
+    }
+}
